@@ -29,7 +29,7 @@ class MainWindow(qt.QMainWindow):
         self.tree.resize(640, 480)
         self.tree.setSelectionMode(qt.QAbstractItemView.MultiSelection)
 
-        self.rename_button = qt.QPushButton("Batch rename", clicked=self.batch_rename)
+        self.rename_button = qt.QPushButton("Batch rename button", clicked=self.batch_rename)
 
         # Add Widget to Central Widget
         self.left_widget.layout().addWidget(self.tree)
