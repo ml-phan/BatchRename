@@ -6,11 +6,13 @@ from subprocess import CREATE_NO_WINDOW
 from PyQt5 import QtCore
 import PyQt5.QtWidgets as qt
 
+
 class MainWindow(qt.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("gallery-dl-helper")
         self.statusBar().showMessage("Ready")
+        self.setGeometry(800, 200, 0, 0)
         central_widget = qt.QWidget()
         self.setCentralWidget(central_widget)
         central_widget.setLayout(qt.QGridLayout())
@@ -27,13 +29,17 @@ class MainWindow(qt.QMainWindow):
         self.delete_field = qt.QLineEdit()
         self.finished_list = qt.QListWidget()
         self.finished_list.setMinimumSize(400, 400)
-
+        self.download_list_label = qt.QLabel("Downloading")
+        self.finished_list_label = qt.QLabel("Finished")
 
         central_widget.layout().addWidget(self.link_label, 0, 1)
         central_widget.layout().addWidget(self.link_field, 0, 2)
         central_widget.layout().addWidget(self.download_button, 0, 0)
-        central_widget.layout().addWidget(self.download_list, 1, 0, 1, 3)
-        central_widget.layout().addWidget(self.finished_list, 2, 0, 1, 3)
+
+        central_widget.layout().addWidget(self.download_list_label, 1, 0)
+        central_widget.layout().addWidget(self.download_list, 2, 0, 1, 3)
+        central_widget.layout().addWidget(self.finished_list_label, 3, 0)
+        central_widget.layout().addWidget(self.finished_list, 4, 0, 1, 3)
         central_widget.layout().addWidget(self.delete_field)
         central_widget.layout().addWidget(self.delete_button)
 
@@ -42,9 +48,8 @@ class MainWindow(qt.QMainWindow):
         self.link_field.clear()
         self.download_list.addItem(link)
         self.statusBar().showMessage("Downloading " + link)
-        # p = subprocess.Popen("gallery-dl " + link, creationflags=CREATE_NO_WINDOW)
-        # p.wait()
-        # self.download_list.removeItemWidget(link)
+        p = subprocess.Popen("gallery-dl " + link)
+        self.finished_list.addItem(link)
 
     def delete_link(self):
         link = self.delete_field.text()
