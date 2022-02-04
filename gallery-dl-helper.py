@@ -11,12 +11,16 @@ from PyQt5.QtCore import QObject, pyqtSignal, QThread
 
 class WorkerDownloadConsole(QThread):
     link = ""
+    img_range = ""
 
-    def __init__(self, link):
+    def __init__(self, link, img_range):
         super().__init__()
         self.link = link
+        self.img_range = img_range
 
     def run(self):
+        if not self.img_range:
+            self.link = self.link + " --range " + self.img_range
         os.system("gallery-dl " + self.link)
 
 
@@ -36,27 +40,33 @@ class MainWindow(qt.QMainWindow):
         self.link_field = qt.QLineEdit()
         # self.link_field.returnPressed.connect(self.download_clicked)
         self.link_field.setMinimumWidth(300)
-        self.download_button = qt.QPushButton("Download", clicked=self.worker_download)
+        self.download_button = qt.QPushButton("Start Download", clicked=self.worker_download)
         self.download_list_box = qt.QListWidget()
-        self.download_button.setMaximumWidth(100)
+        # self.download_button.setMaximumWidth(100)
         self.download_list_box.setMinimumSize(400, 400)
-        self.delete_button = qt.QPushButton("Delete", clicked=self.delete_link)
-        self.delete_field = qt.QLineEdit()
+        # self.delete_button = qt.QPushButton("Delete", clicked=self.delete_link)
+        # self.delete_field = qt.QLineEdit()
         self.finished_list_box = qt.QListWidget()
         self.finished_list_box.setMinimumSize(400, 400)
         self.download_list_label = qt.QLabel("Downloading")
         self.finished_list_label = qt.QLabel("Finished")
+        self.image_range = qt.QLabel("Images number")
+        self.image_range_input = qt.QLineEdit()
+        self.image_range_input.setPlaceholderText("e.g : 1-2")
+        self.image_range_input.setMaximumWidth(150)
 
-        central_widget.layout().addWidget(self.link_label, 0, 1)
-        central_widget.layout().addWidget(self.link_field, 0, 2)
-        central_widget.layout().addWidget(self.download_button, 0, 0)
+        central_widget.layout().addWidget(self.link_label, 0, 0)
+        central_widget.layout().addWidget(self.link_field, 0, 1)
+        central_widget.layout().addWidget(self.download_button, 2, 0)
+        central_widget.layout().addWidget(self.image_range, 1, 0)
+        central_widget.layout().addWidget(self.image_range_input, 1, 1)
 
-        central_widget.layout().addWidget(self.download_list_label, 1, 0)
-        central_widget.layout().addWidget(self.download_list_box, 2, 0, 1, 3)
-        central_widget.layout().addWidget(self.finished_list_label, 3, 0)
-        central_widget.layout().addWidget(self.finished_list_box, 4, 0, 1, 3)
-        central_widget.layout().addWidget(self.delete_field)
-        central_widget.layout().addWidget(self.delete_button)
+        central_widget.layout().addWidget(self.download_list_label, 3, 0)
+        central_widget.layout().addWidget(self.download_list_box, 4, 0, 1, 3)
+        central_widget.layout().addWidget(self.finished_list_label, 5, 0)
+        central_widget.layout().addWidget(self.finished_list_box, 6, 0, 1, 3)
+        # central_widget.layout().addWidget(self.delete_field)
+        # central_widget.layout().addWidget(self.delete_button)
 
     def download_console(self):
         link = self.link_field.text()
@@ -91,11 +101,14 @@ class MainWindow(qt.QMainWindow):
 
     def worker_download(self):
         link = self.link_field.text()
+        img_range = ""
+        if self.image_range_input.text() is not None:
+            img_range = self.image_range_input.text()
         self.link_field.clear()
         self.statusBar().showMessage("Downloading " + link)
         self.download_list.append(link)
         self.update_download_list()
-        self.worker = WorkerDownloadConsole(link)
+        self.worker = WorkerDownloadConsole(link, img_range)
         self.worker.start()
         self.worker.finished.connect(lambda: self.download_worker_finished(link))
 
