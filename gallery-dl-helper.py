@@ -45,7 +45,7 @@ class MainWindow(qt.QMainWindow):
         self.image_range_input.returnPressed.connect(self.worker_download)
         self.image_range_input.setPlaceholderText("e.g : 1-2")
         self.image_range_input.setMaximumWidth(150)
-        self.batch_download_button = qt.QPushButton("Batch download from files")
+        self.batch_download_button = qt.QPushButton("Batch download from file")
         # self.batch_download_button.setMaximumWidth(152)
         self.clipboard_download_button = qt.QPushButton("Download from Clipboard")
 
